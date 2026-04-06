@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const TEACHER_SYLLABUS_STORAGE_KEY = "learnsync-teacher-syllabus-uri";
 
 type UploadContextResponse = {
   fileUri: string;
@@ -15,6 +17,17 @@ export function TeacherKnowledgeBase({ syllabusFileUri, onSyllabusFileUri }: Pro
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (syllabusFileUri) {
+      return;
+    }
+
+    const storedUri = window.localStorage.getItem(TEACHER_SYLLABUS_STORAGE_KEY);
+    if (storedUri && storedUri.trim()) {
+      onSyllabusFileUri(storedUri);
+    }
+  }, [syllabusFileUri, onSyllabusFileUri]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -43,7 +56,12 @@ export function TeacherKnowledgeBase({ syllabusFileUri, onSyllabusFileUri }: Pro
       }
 
       const payload = (await response.json()) as UploadContextResponse;
-      onSyllabusFileUri(payload.fileUri ?? null);
+      const uri = payload.fileUri ?? null;
+      onSyllabusFileUri(uri);
+      if (uri) {
+        window.localStorage.setItem(TEACHER_SYLLABUS_STORAGE_KEY, uri);
+        window.dispatchEvent(new Event("learnsync-syllabus-updated"));
+      }
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Unexpected upload error");
     } finally {

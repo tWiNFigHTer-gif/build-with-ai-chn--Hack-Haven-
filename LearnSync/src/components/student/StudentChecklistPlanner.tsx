@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ClipboardList, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { useLearnSyncContext } from "./LearnSyncProvider";
 
 type ChecklistItem = {
@@ -72,7 +75,7 @@ export function StudentChecklistPlanner() {
 
   const generateChecklist = async () => {
     if (!syllabusFileUri) {
-      setError("Upload syllabus context before generating checklist.");
+      setError("Teacher must upload syllabus context before generating checklist.");
       return;
     }
 
@@ -107,60 +110,99 @@ export function StudentChecklistPlanner() {
   };
 
   return (
-    <section>
-      <h2>AI Day + Week Checklist</h2>
-      <p>Generate, edit, and complete your checklist. You can change any item manually.</p>
-      <input
-        type="text"
-        value={prompt}
-        onChange={(event) => setPrompt(event.target.value)}
-        placeholder="Optional: focus on tomorrow's calculus revision"
-      />
-      <button type="button" onClick={generateChecklist} disabled={isGenerating}>
-        {isGenerating ? "Generating..." : "Suggest Day + Week Checklist"}
-      </button>
-      {answer ? <p>Model Answer: {answer}</p> : null}
-      {error ? <p role="alert">{error}</p> : null}
-
-      <h3>Day Checklist ({dayPercent}%)</h3>
-      <button type="button" onClick={() => addItem("day")}>Add Day Item</button>
-      {dayItems.map((item) => (
-        <div key={item.id}>
-          <input
-            type="checkbox"
-            checked={item.done}
-            onChange={(event) => updateItem("day", item.id, (current) => ({ ...current, done: event.target.checked }))}
-          />
+    <Card className="border-white/10 bg-white/[0.06]">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ClipboardList className="h-5 w-5 text-[#60A5FA]" aria-hidden />
+          AI day + week checklist
+        </CardTitle>
+        <CardDescription>
+          Suggested from teacher syllabus context. Edit manually and mark done as you progress.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             type="text"
-            value={item.text}
-            onChange={(event) => updateItem("day", item.id, (current) => ({ ...current, text: event.target.value }))}
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+            placeholder="Optional focus: tomorrow's calculus revision"
+            className="h-10 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100 focus:border-[#3B82F6]/50 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/30"
           />
-          <button type="button" onClick={() => removeItem("day", item.id)}>
-            Remove
-          </button>
+          <Button type="button" onClick={generateChecklist} disabled={isGenerating} className="gap-2 sm:w-56">
+            <Sparkles className="h-4 w-4" aria-hidden />
+            {isGenerating ? "Generating..." : "Suggest Day + Week"}
+          </Button>
         </div>
-      ))}
+        {answer ? <p className="text-sm text-zinc-300">Model Answer: {answer}</p> : null}
+        {error ? <p className="text-sm text-rose-400" role="alert">{error}</p> : null}
 
-      <h3>Week Checklist ({weekPercent}%)</h3>
-      <button type="button" onClick={() => addItem("week")}>Add Week Item</button>
-      {weekItems.map((item) => (
-        <div key={item.id}>
-          <input
-            type="checkbox"
-            checked={item.done}
-            onChange={(event) => updateItem("week", item.id, (current) => ({ ...current, done: event.target.checked }))}
-          />
-          <input
-            type="text"
-            value={item.text}
-            onChange={(event) => updateItem("week", item.id, (current) => ({ ...current, text: event.target.value }))}
-          />
-          <button type="button" onClick={() => removeItem("week", item.id)}>
-            Remove
-          </button>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-3 rounded-xl border border-white/10 bg-black/30 p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">Day ({dayPercent}%)</h3>
+              <Button type="button" size="sm" variant="outline" className="gap-1" onClick={() => addItem("day")}>
+                <Plus className="h-3.5 w-3.5" aria-hidden />
+                Add
+              </Button>
+            </div>
+            {dayItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2">
+                <input
+                  type="checkbox"
+                  checked={item.done}
+                  onChange={(event) =>
+                    updateItem("day", item.id, (current) => ({ ...current, done: event.target.checked }))
+                  }
+                />
+                <input
+                  type="text"
+                  value={item.text}
+                  onChange={(event) =>
+                    updateItem("day", item.id, (current) => ({ ...current, text: event.target.value }))
+                  }
+                  className="h-8 flex-1 rounded border border-white/10 bg-black/40 px-2 text-sm text-zinc-100 focus:border-[#3B82F6]/50 focus:outline-none"
+                />
+                <Button type="button" size="icon" variant="ghost" onClick={() => removeItem("day", item.id)}>
+                  <Trash2 className="h-4 w-4 text-rose-400" aria-hidden />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-white/10 bg-black/30 p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">Week ({weekPercent}%)</h3>
+              <Button type="button" size="sm" variant="outline" className="gap-1" onClick={() => addItem("week")}>
+                <Plus className="h-3.5 w-3.5" aria-hidden />
+                Add
+              </Button>
+            </div>
+            {weekItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2">
+                <input
+                  type="checkbox"
+                  checked={item.done}
+                  onChange={(event) =>
+                    updateItem("week", item.id, (current) => ({ ...current, done: event.target.checked }))
+                  }
+                />
+                <input
+                  type="text"
+                  value={item.text}
+                  onChange={(event) =>
+                    updateItem("week", item.id, (current) => ({ ...current, text: event.target.value }))
+                  }
+                  className="h-8 flex-1 rounded border border-white/10 bg-black/40 px-2 text-sm text-zinc-100 focus:border-[#3B82F6]/50 focus:outline-none"
+                />
+                <Button type="button" size="icon" variant="ghost" onClick={() => removeItem("week", item.id)}>
+                  <Trash2 className="h-4 w-4 text-rose-400" aria-hidden />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </section>
+      </CardContent>
+    </Card>
   );
 }

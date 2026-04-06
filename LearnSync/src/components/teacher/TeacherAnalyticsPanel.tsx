@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { BarChart3, FileText, GraduationCap } from "lucide-react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 type TopicRow = {
   id: string;
@@ -139,93 +142,116 @@ export function TeacherAnalyticsPanel() {
   };
 
   return (
-    <section>
-      <h2>Teacher Analytics and Report Generator</h2>
-
-      <h3>Revision Important Topic Chart</h3>
-      <p>Higher priority means a stronger need for revision focus.</p>
-      {analyticsError ? <p role="alert">{analyticsError}</p> : null}
-      <button type="button" onClick={addTopic}>Add Topic</button>
-      {topics.map((topic) => (
-        <div key={topic.id}>
-          <input
-            type="text"
-            value={topic.topic}
-            onChange={(event) => updateTopic(topic.id, { topic: event.target.value })}
-          />
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={topic.priority}
-            onChange={(event) => updateTopic(topic.id, { priority: toPercent(Number(event.target.value)) })}
-          />
-          <button type="button" onClick={() => removeTopic(topic.id)}>Remove</button>
-          <div style={{ background: "#e5e7eb", height: 10, width: "100%", maxWidth: 420 }}>
-            <div
-              style={{
-                background: "#f97316",
-                height: 10,
-                width: `${toPercent(topic.priority)}%`
-              }}
-            />
-          </div>
-          <p>{toPercent(topic.priority)}% revision priority</p>
-        </div>
-      ))}
-
-      <h3>Student Marks Entry</h3>
-      <button type="button" onClick={addStudent}>Add Student</button>
-      {students.map((student) => (
-        <div key={student.id}>
-          <input
-            type="text"
-            value={student.name}
-            onChange={(event) => updateStudent(student.id, { name: event.target.value })}
-          />
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={student.maths}
-            onChange={(event) => updateStudent(student.id, { maths: toPercent(Number(event.target.value)) })}
-          />
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={student.science}
-            onChange={(event) => updateStudent(student.id, { science: toPercent(Number(event.target.value)) })}
-          />
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={student.english}
-            onChange={(event) => updateStudent(student.id, { english: toPercent(Number(event.target.value)) })}
-          />
-          <button type="button" onClick={() => removeStudent(student.id)}>Remove</button>
-        </div>
-      ))}
-
-      <button type="button" onClick={generateReportCards}>Generate Report Cards</button>
-      {generatedAt ? <p>Last generated: {generatedAt}</p> : null}
-
-      {generatedAt ? (
-        <div>
-          <h3>Generated Report Cards</h3>
-          {reportRows.map((row) => (
-            <article key={row.id}>
-              <h4>{row.name}</h4>
-              <p>Maths: {row.maths}</p>
-              <p>Science: {row.science}</p>
-              <p>English: {row.english}</p>
-              <p>Average: {row.average}%</p>
-              <p>Grade: {row.grade}</p>
-            </article>
+    <div className="space-y-6">
+      <Card className="border-white/10 bg-white/[0.06]">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-[#60A5FA]" aria-hidden />
+            Revision important topic chart
+          </CardTitle>
+          <CardDescription>Higher priority means stronger revision need from live doubt patterns.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {analyticsError ? <p className="text-sm text-rose-400" role="alert">{analyticsError}</p> : null}
+          <Button type="button" variant="outline" onClick={addTopic}>Add Topic</Button>
+          {topics.map((topic) => (
+            <div key={topic.id} className="rounded-xl border border-white/10 bg-black/35 p-3">
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  type="text"
+                  value={topic.topic}
+                  onChange={(event) => updateTopic(topic.id, { topic: event.target.value })}
+                  className="h-9 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={topic.priority}
+                  onChange={(event) => updateTopic(topic.id, { priority: toPercent(Number(event.target.value)) })}
+                  className="h-9 w-28 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100"
+                />
+                <Button type="button" variant="ghost" onClick={() => removeTopic(topic.id)}>Remove</Button>
+              </div>
+              <div className="mt-2 h-2 w-full max-w-xl rounded-full bg-zinc-800">
+                <div className="h-2 rounded-full bg-orange-400" style={{ width: `${toPercent(topic.priority)}%` }} />
+              </div>
+              <p className="mt-1 text-xs text-zinc-400">{toPercent(topic.priority)}% revision priority</p>
+            </div>
           ))}
-        </div>
-      ) : null}
-    </section>
+        </CardContent>
+      </Card>
+
+      <Card className="border-white/10 bg-white/[0.06]">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <GraduationCap className="h-5 w-5 text-[#60A5FA]" aria-hidden />
+            Student marks entry
+          </CardTitle>
+          <CardDescription>Enter marks per student profile before generating report cards.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button type="button" variant="outline" onClick={addStudent}>Add Student</Button>
+          {students.map((student) => (
+            <div key={student.id} className="grid gap-2 rounded-xl border border-white/10 bg-black/35 p-3 sm:grid-cols-6">
+              <input
+                type="text"
+                value={student.name}
+                onChange={(event) => updateStudent(student.id, { name: event.target.value })}
+                className="h-9 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100 sm:col-span-2"
+              />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={student.maths}
+                onChange={(event) => updateStudent(student.id, { maths: toPercent(Number(event.target.value)) })}
+                className="h-9 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100"
+              />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={student.science}
+                onChange={(event) => updateStudent(student.id, { science: toPercent(Number(event.target.value)) })}
+                className="h-9 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100"
+              />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={student.english}
+                onChange={(event) => updateStudent(student.id, { english: toPercent(Number(event.target.value)) })}
+                className="h-9 rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-zinc-100"
+              />
+              <Button type="button" variant="ghost" onClick={() => removeStudent(student.id)}>Remove</Button>
+            </div>
+          ))}
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="button" onClick={generateReportCards} className="gap-2">
+              <FileText className="h-4 w-4" aria-hidden />
+              Generate Report Cards
+            </Button>
+            {generatedAt ? <p className="text-xs text-zinc-500">Last generated: {generatedAt}</p> : null}
+          </div>
+
+          {generatedAt ? (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {reportRows.map((row) => (
+                <article key={row.id} className="rounded-xl border border-white/10 bg-black/30 p-4 text-sm">
+                  <h4 className="text-base font-semibold text-white">{row.name}</h4>
+                  <p className="mt-2 text-zinc-400">Maths: {row.maths}</p>
+                  <p className="text-zinc-400">Science: {row.science}</p>
+                  <p className="text-zinc-400">English: {row.english}</p>
+                  <p className="mt-2 text-zinc-200">Average: {row.average}%</p>
+                  <p className="text-[#60A5FA]">Grade: {row.grade}</p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
+
+@theme {
+	--color-charcoal: #0b0b0b;
+	--color-electric: #3b82f6;
+	--color-electric-glow: #60a5fa;
+	--color-glass-border: rgba(255, 255, 255, 0.08);
+	--font-family-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+	--font-family-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+html {
+	color-scheme: dark;
+}
+
+body {
+	min-height: 100vh;
+	background-color: #0b0b0b;
+	color: #f4f4f5;
+	-webkit-font-smoothing: antialiased;
+}
+
+.glass-panel {
+	@apply rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md shadow-[0_0_40px_-12px_rgba(59,130,246,0.35)];
+}
+
+.timer-ring {
+	animation: timer-breathe 4s ease-in-out infinite;
+}
+
+@keyframes timer-breathe {
+	0%,
+	100% {
+		box-shadow:
+			0 0 0 1px rgba(59, 130, 246, 0.35),
+			0 0 28px rgba(59, 130, 246, 0.2);
+	}
+	50% {
+		box-shadow:
+			0 0 0 2px rgba(59, 130, 246, 0.55),
+			0 0 40px rgba(59, 130, 246, 0.35);
+	}
+}
+
+@keyframes slide-in-glow {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+		filter: drop-shadow(0 0 0 transparent);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+		filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.35));
+	}
+}
+
+.todo-item-enter {
+	animation: slide-in-glow 0.45s ease-out both;
+}
