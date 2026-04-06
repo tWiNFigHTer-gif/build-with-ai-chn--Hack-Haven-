@@ -1,4 +1,4 @@
-# PRD.md: LearnSync
+# Features.md: LearnSync
 
 ## 1. Project Overview
 **Project Name:** LearnSync
